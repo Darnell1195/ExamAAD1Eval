@@ -2,27 +2,48 @@ package edu.iesam.examaad1eval
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.DelicateCoroutinesApi
+import androidx.room.Room
+import edu.iesam.examaad1eval.features.ex2.data.AppDatabase
+import edu.iesam.examaad1eval.features.ex2.data.db.Game
+import edu.iesam.examaad1eval.features.ex2.data.db.Player
+import edu.iesam.examaad1eval.features.ex2.domain.GameRepositoryImpl
+import edu.iesam.examaad1eval.features.ex2.domain.PlayerRepositoryImpl
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+
 class MainActivity : AppCompatActivity() {
+    private lateinit var gameRepository: GameRepositoryImpl
+    private lateinit var playerRepository: PlayerRepositoryImpl
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "database-name"
+        ).build()
+
+        gameRepository = GameRepositoryImpl(db.gameDao())
+        playerRepository = PlayerRepositoryImpl(db.playerDao())
+
         executeExercise1()
         executeExercise2()
     }
 
-    private fun executeExercise1(){
-        //Ejecutar el ejercicio 1 desde aquí llamando al Ex1DataRepository directamente
+    private fun executeExercise1() {
+        // Implementación del ejercicio 1
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun executeExercise2(){
-        //Ejecutar el ejercicio 2 desde aquí llamando al Ex2DataRepository directamente
+    private fun executeExercise2() {
         GlobalScope.launch {
-            //llamar a Room
+            // Ejemplo de inserción de datos
+            val game = Game("1", "LOL")
+            gameRepository.insertGame(game)
+
+            val player = Player("1", "Juan", "1")
+            playerRepository.insertPlayer(player)
         }
     }
 }
