@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         val db = Room.databaseBuilder(
             applicationContext,
-            AppDatabase::class.java, "database-name"
+            AppDatabase::class.java, "AppDatabase"
         ).build()
 
         gameRepository = GameRepositoryImpl(db.gameDao())

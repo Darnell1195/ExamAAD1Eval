@@ -1,4 +1,3 @@
-// app/src/main/java/edu/iesam/examaad1eval/features/ex2/data/PlayerDao.kt
 package edu.iesam.examaad1eval.features.ex2.data.db
 
 import androidx.room.Dao
