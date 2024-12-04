@@ -1,11 +1,11 @@
-package edu.iesam.examaad1eval.app.converters
+package edu.iesam.examaad1eval.features.ex2.data.local.db
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import edu.iesam.examaad1eval.features.ex2.domain.Player
 
-class ListConverter {
+class Converter {
     private val gson = Gson()
 
     @TypeConverter

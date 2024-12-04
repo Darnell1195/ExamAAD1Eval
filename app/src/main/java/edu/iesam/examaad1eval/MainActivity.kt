@@ -2,13 +2,14 @@ package edu.iesam.examaad1eval
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import edu.iesam.examaad1eval.app.converters.DbProvider
+import androidx.lifecycle.lifecycleScope
+import edu.iesam.examaad1eval.app.converters.DataBaseProvider
 import edu.iesam.examaad1eval.features.ex2.data.Ex2DataRepository
 import edu.iesam.examaad1eval.features.ex2.data.local.DbEx2LocalDataSource
 import edu.iesam.examaad1eval.features.ex2.data.remote.MockEx2RemoteDataSource
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,19 +23,21 @@ class MainActivity : AppCompatActivity() {
         // Ejecutar el ejercicio 1 desde aquí llamando al Ex1DataRepository directamente
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun executeExercise2() {
-        GlobalScope.launch {
-            val db = DbEx2LocalDataSource(
-                DbProvider.provideDb(this@MainActivity).gameDao(),
-                DbProvider.provideDb(this@MainActivity).playerDao()
-            )
-            val ex2DataRepository = Ex2DataRepository(MockEx2RemoteDataSource(), db)
-            val games = ex2DataRepository.getAllGames()
-            ex2DataRepository.saveAllGames(games)
+        lifecycleScope.launch {
+            val ex2DataRepository = createEx2DataRepository()
+            val games = withContext(Dispatchers.IO) { ex2DataRepository.getAllGames() }
+            withContext(Dispatchers.IO) { ex2DataRepository.saveAllGames(games) }
 
-            val players = ex2DataRepository.getAllPlayers()
-            ex2DataRepository.saveAllPlayers(players)
+            val players = withContext(Dispatchers.IO) { ex2DataRepository.getAllPlayers() }
+            withContext(Dispatchers.IO) { ex2DataRepository.saveAllPlayers(players) }
         }
+    }
+
+    private fun createEx2DataRepository(): Ex2DataRepository {
+        val db = DataBaseProvider.provideDb(this)
+        val localDataSource = DbEx2LocalDataSource(db.gameDao(), db.playerDao())
+        val remoteDataSource = MockEx2RemoteDataSource()
+        return Ex2DataRepository(remoteDataSource, localDataSource)
     }
 }
